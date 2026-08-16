@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3f7f6">
+  <title>NearFind 시민 앱 데모</title>
+  <style>
+    :root {
+      --ink: #14211f;
+      --muted: #667471;
+      --line: #dbe3e0;
+      --surface: #ffffff;
+      --canvas: #f3f7f6;
+      --green: #0f766e;
+      --green-dark: #095a54;
+      --green-pale: #e6f2ef;
+      --blue: #2563eb;
+      --amber: #d97706;
+      --danger: #b42318;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; background: #dce5e2; }
+    body {
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    #app { min-height: 100dvh; }
+    .phone {
+      position: relative;
+      width: min(100%, 420px);
+      min-height: 100dvh;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--canvas);
+      box-shadow: 0 0 34px rgba(20, 33, 31, .12);
+    }
+    .statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 31px;
+      padding: max(7px, env(safe-area-inset-top)) 19px 3px;
+      background: var(--surface);
+      color: #31403d;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .status-icons { display: flex; align-items: center; gap: 7px; font-size: 10px; }
+    .appbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 56px;
+      padding: 12px 18px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; letter-spacing: -.04em; }
+    .brand-mark { width: 24px; height: 24px; display: grid; place-items: center; border: 2px solid var(--green); color: var(--green); font-size: 14px; line-height: 1; }
+    .demo-badge { border: 1px solid #b4cbc6; color: var(--green-dark); background: #f7fbfa; font-size: 10px; font-weight: 800; padding: 3px 6px; letter-spacing: .04em; }
+    .screen { min-height: calc(100dvh - 87px); display: flex; flex-direction: column; }
+    .map-screen { background: var(--canvas); }
+    .map-area {
+      position: relative;
+      min-height: 392px;
+      overflow: hidden;
+      background-color: #e7ece9;
+      border-bottom: 1px solid #d4ded9;
+    }
+    .map-area svg { width: 100%; height: 392px; display: block; }
+    .map-grid { stroke: #d3dad7; stroke-width: 1; opacity: .95; }
+    .road { fill: none; stroke: #fbfdfc; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+    .road-outline { fill: none; stroke: #c6d0cc; stroke-width: 14; stroke-linecap: round; stroke-linejoin: round; }
+    .minor-road { fill: none; stroke: #fafcfc; stroke-width: 5; stroke-linecap: round; }
+    .water { fill: #d3e4e9; }
+    .block { fill: #dce4df; stroke: #cbd5d0; stroke-width: .6; }
+    .zone-label rect { fill: rgba(255,255,255,.94); stroke: #c7d4cf; stroke-width: .75; }
+    .zone-label text { fill: #334541; font-size: 10px; font-family: inherit; font-weight: 800; }
+    .zone { mix-blend-mode: multiply; }
+    .zone.outer { stroke-width: 1.6; }
+    .zone.a-highlight { fill: none; stroke: var(--green); stroke-width: 2.5; stroke-dasharray: 6 5; animation: pulse 1.8s ease-in-out infinite; }
+    .user-dot { fill: #172d2a; stroke: white; stroke-width: 3; }
+    .user-ring { fill: rgba(15,118,110,.12); stroke: rgba(15,118,110,.28); stroke-width: 1; }
+    .map-note {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 9px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid #d3ddda;
+      color: #334541;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .legend { position: absolute; right: 13px; top: 13px; background: rgba(255,255,255,.92); border: 1px solid #d3ddda; padding: 7px 8px; color: #566662; font-size: 10px; }
+    .legend-dot { display: inline-block; width: 7px; height: 7px; margin-right: 4px; border-radius: 50%; background: var(--green); }
+    .map-attribution { position: absolute; bottom: 8px; right: 11px; padding: 3px 5px; color: #75827e; background: rgba(255,255,255,.7); font-size: 9px; }
+    .home-summary { padding: 16px 16px 14px; background: var(--surface); }
+    .eyebrow { color: var(--green-dark); font-size: 11px; font-weight: 800; letter-spacing: .06em; }
+    .summary-title { margin: 5px 0 12px; font-size: 18px; letter-spacing: -.04em; }
+    .stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .stat { padding: 10px 8px; border-right: 1px solid var(--line); text-align: center; }
+    .stat:last-child { border-right: 0; }
+    .stat strong { display: block; color: #1e2f2b; font-size: 15px; letter-spacing: -.04em; }
+    .stat span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .subtle-action { display: block; width: auto; margin: 12px auto 0; padding: 5px 8px; border: 0; border-bottom: 1px solid #9bb5af; background: transparent; color: #40615a; font-size: 11px; cursor: pointer; }
+    .bottom-nav { display: flex; justify-content: space-around; margin-top: auto; padding: 12px 18px calc(12px + env(safe-area-inset-bottom)); color: #71807c; background: white; border-top: 1px solid var(--line); font-size: 10px; }
+    .bottom-nav .active { color: var(--green-dark); font-weight: 800; }
+    .notification-layer { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(16,31,28,.42); }
+    .push-toast { margin: 0 12px 14px; padding: 18px; background: #fff; border: 1px solid #cad8d3; box-shadow: 0 12px 28px rgba(8, 26, 22, .23); }
+    .push-head { display: flex; align-items: center; gap: 9px; }
+    .push-icon { width: 26px; height: 26px; display: grid; place-items: center; background: var(--green-pale); color: var(--green-dark); font-size: 15px; }
+    .push-title { font-size: 16px; font-weight: 800; letter-spacing: -.035em; }
+    .push-body { margin: 10px 0 15px; color: #52625e; font-size: 13px; line-height: 1.55; }
+    .content { flex: 1; padding: 20px 18px calc(18px + env(safe-area-inset-bottom)); }
+    .title { margin: 6px 0 8px; font-size: 23px; letter-spacing: -.055em; line-height: 1.25; }
+    .description { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .section-label { margin: 23px 0 9px; color: #50625d; font-size: 11px; font-weight: 800; letter-spacing: .04em; }
+    .appearance-card { margin-top: 18px; background: var(--surface); border: 1px solid var(--line); }
+    .silhouette-pane { position: relative; min-height: 266px; overflow: hidden; display: grid; place-items: end center; background: #edf3f1; border-bottom: 1px solid var(--line); }
+    .silhouette-caption { position: absolute; left: 12px; top: 12px; padding: 5px 7px; background: rgba(255,255,255,.9); border: 1px solid #d5e0dc; color: #477067; font-size: 10px; font-weight: 700; }
+    .person { position: relative; width: 155px; height: 238px; }
+    .head { position: absolute; z-index: 2; top: 31px; left: 57px; width: 40px; height: 47px; border-radius: 45% 45% 47% 47%; background: #c49a7b; }
+    .cap { position: absolute; z-index: 3; top: 20px; left: 49px; width: 58px; height: 23px; border-radius: 28px 28px 7px 7px; background: #202a2a; }
+    .cap::after { content: ""; position: absolute; left: 38px; top: 16px; width: 31px; height: 8px; background: #202a2a; border-radius: 0 9px 9px 0; transform: rotate(-5deg); }
+    .neck { position: absolute; z-index: 1; top: 72px; left: 66px; width: 23px; height: 24px; background: #b88e70; }
+    .shirt { position: absolute; bottom: 1px; left: 27px; width: 102px; height: 153px; background: #829091; clip-path: polygon(27% 0, 73% 0, 100% 19%, 89% 100%, 11% 100%, 0 19%); }
+    .shirt::after { content: ""; position: absolute; top: 0; left: 37px; width: 28px; height: 18px; border-radius: 0 0 18px 18px; background: #edf3f1; }
+    .arm { position: absolute; z-index: 1; top: 106px; width: 27px; height: 104px; background: #718081; }
+    .arm.left { left: 17px; transform: rotate(8deg); }
+    .arm.right { right: 16px; transform: rotate(-8deg); }
+    .bag { position: absolute; z-index: 4; right: 17px; bottom: 24px; width: 44px; height: 58px; background: #2874b8; border: 3px solid #1e5793; }
+    .bag::before { content: ""; position: absolute; top: -19px; left: -22px; width: 31px; height: 45px; border-top: 7px solid #1e5793; border-left: 7px solid #1e5793; border-radius: 20px 0 0 0; transform: rotate(14deg); }
+    .bag::after { content: ""; position: absolute; left: 8px; top: 19px; width: 22px; height: 3px; background: #a9d0ed; }
+    .card-body { padding: 15px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { padding: 6px 8px; color: #315851; background: #eef5f3; border: 1px solid #d3e3de; font-size: 12px; font-weight: 700; }
+    .time-line { margin: 14px 0 0; color: #445651; font-size: 13px; font-weight: 700; }
+    .notice { display: flex; gap: 8px; margin-top: 15px; padding: 10px 11px; color: #4e615c; background: #f3f7f6; border-left: 3px solid #a4c6be; font-size: 12px; line-height: 1.5; }
+    .safety-message { margin: 12px 0 0; padding: 11px; color: #5e4a32; background: #fff9ee; border: 1px solid #f0dfbb; font-size: 12px; line-height: 1.5; }
+    .actions { display: grid; gap: 9px; margin-top: auto; padding-top: 18px; }
+    .two-actions { grid-template-columns: 1fr 1fr; }
+    .button { width: 100%; min-height: 48px; padding: 11px 14px; border: 1px solid var(--green); border-radius: 0; background: var(--green); color: white; font-weight: 800; font-size: 14px; cursor: pointer; }
+    .button:hover { background: var(--green-dark); }
+    .button.secondary { background: white; color: var(--green-dark); }
+    .button.secondary:hover { background: #f5faf8; }
+    .button.plain { border-color: #bdccca; color: #3e5550; }
+    .walk-map { min-height: 324px; margin: 16px -18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .walk-map svg { height: 324px; }
+    .walk-panel { margin-top: 0; padding: 16px 0 0; }
+    .walk-topline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .walk-topline strong { font-size: 18px; letter-spacing: -.05em; }
+    .reward { color: var(--green-dark); font-size: 12px; font-weight: 800; }
+    .progress-track { height: 8px; margin: 11px 0 9px; overflow: hidden; background: #dbe7e3; }
+    .progress-fill { height: 100%; background: var(--green); transition: width .3s ease; }
+    .walk-help { margin: 0; color: var(--muted); font-size: 12px; }
+    .earned { display: flex; align-items: center; gap: 7px; margin-top: 12px; padding: 10px; color: #245c52; background: #e8f4ef; border: 1px solid #c9e1d8; font-size: 12px; font-weight: 800; }
+    .report-intro { margin-bottom: 18px; }
+    .report-guard { margin: 18px 0 0; padding: 11px; background: #eef5f3; border-left: 3px solid #7aaea2; color: #3f5751; font-size: 12px; line-height: 1.5; }
+    .option-list { display: grid; gap: 8px; }
+    .report-option { width: 100%; display: flex; align-items: center; gap: 11px; padding: 14px 12px; text-align: left; background: white; border: 1px solid var(--line); border-radius: 0; color: #253532; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .report-option::before { content: ""; flex: 0 0 auto; width: 16px; height: 16px; border: 1.5px solid #aebfba; border-radius: 50%; }
+    .report-option.selected { border-color: var(--green); color: var(--green-dark); background: #f6fbf9; }
+    .report-option.selected::before { box-shadow: inset 0 0 0 4px #f6fbf9; border-color: var(--green); background: var(--green); }
+    .detail-list { border-top: 1px solid var(--line); }
+    .detail-line { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .detail-line span { flex: 0 0 75px; color: var(--muted); }
+    .detail-line strong { color: #344743; font-weight: 700; }
+    textarea { width: 100%; min-height: 93px; resize: none; padding: 11px; color: var(--ink); background: white; border: 1px solid #bdccc7; border-radius: 0; font-size: 13px; outline-color: var(--green); }
+    .field-count { margin-top: 4px; text-align: right; color: #7b8985; font-size: 11px; }
+    .upload-placeholder { display: flex; align-items: center; justify-content: center; min-height: 62px; border: 1px dashed #aabdb7; color: #667974; background: #f8fbfa; font-size: 12px; }
+    .validation { min-height: 18px; margin: 10px 0 -5px; color: var(--danger); font-size: 12px; font-weight: 700; }
+    .complete { justify-content: center; text-align: center; }
+    .complete-icon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto 17px; color: white; background: var(--green); border-radius: 50%; font-size: 30px; }
+    .receipt { margin: 26px 0 0; padding: 15px; text-align: left; background: white; border: 1px solid var(--line); }
+    .receipt-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+    .receipt-row + .receipt-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .receipt-row strong { color: #2b423d; font-size: 13px; }
+    @keyframes pulse { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
+    @media (min-width: 421px) {
+      .phone { min-height: 780px; margin: 15px auto; border: 1px solid #ced8d5; }
+    }
+  </style>
+</head>
+<body>
+  <main id="app" aria-live="polite"></main>
+  <script>
+    /* File-local demo data: no network request is required, including under file://. */
+    const DEMO_DATA = {
+      isDemo: true,
+      userRoute: [
+        { label: 'start', walkDistanceM: 0 },
+        { label: 'zone-entry', walkDistanceM: 120 },
+        { label: 'inside-zone', walkDistanceM: 420 },
+        { label: 'goal', walkDistanceM: 650 }
+      ],
+      activeCases: [
+        { id: 'NF-DEMO-01', displayName: '안전 알림 A', appearance: ['검은 모자', '회색 티셔츠', '파란 가방'], lastSeen: { area: '광진구 자양동 인근', elapsedMinutes: 12 }, rangePreset: { baseRadiusM: 170, growthMPerMinute: 11, maxRadiusM: 650 }, color: '#0F766E' },
+        { id: 'NF-DEMO-02', displayName: '안전 알림 B', lastSeen: { elapsedMinutes: 28 }, rangePreset: { baseRadiusM: 160, growthMPerMinute: 9, maxRadiusM: 720 }, color: '#2563EB' },
+        { id: 'NF-DEMO-03', displayName: '안전 알림 C', lastSeen: { elapsedMinutes: 52 }, rangePreset: { baseRadiusM: 190, growthMPerMinute: 8, maxRadiusM: 780 }, color: '#D97706' }
+      ],
+      walkGoalM: 650,
+      walkPoints: 30
+    };
+
+    const state = { screen: 'home', pushed: false, distance: 420, elapsed: 12, reportType: '', note: '', validation: '' };
+    const app = document.getElementById('app');
+
+    function appbar(back) {
+      return `<div class="statusbar"><span>9:41</span><span class="status-icons">▮▮▮ &nbsp;◒ &nbsp;▰</span></div>
+        <header class="appbar">
+          <div class="brand">${back ? `<button class="back" aria-label="뒤로" onclick="goHome()" style="border:0;background:none;color:#35514a;font-size:23px;padding:0 5px 0 0;cursor:pointer">‹</button>` : ''}<span class="brand-mark">N</span><span>NearFind</span></div>
+          <span class="demo-badge">데모</span>
+        </header>`;
+    }
+
+    function mapGraphic(mode) {
+      const isWalk = mode === 'walk';
+      const widened = isWalk && state.elapsed === 24;
+      const aOuter = widened ? 143 : 108;
+      const aMiddle = widened ? 95 : 72;
+      const aInner = widened ? 49 : 38;
+      const opacity = widened ? ['.11','.065','.025'] : ['.22','.13','.06'];
+      const dot = isWalk ? (state.distance >= 650 ? [162, 132] : [145, 148]) : [323, 309];
+      return `<div class="map-area ${isWalk ? 'walk-map' : ''}" aria-label="안전 참여 구역 지도">
+        <svg viewBox="0 0 390 392" role="img" aria-label="안전 알림 구역 A, B, C와 사용자 위치">
+          <rect width="390" height="392" fill="#e7ece9"/>
+          <g class="map-grid"><path d="M18 0V392M77 0V392M136 0V392M195 0V392M254 0V392M313 0V392M372 0V392"/><path d="M0 36H390M0 96H390M0 156H390M0 216H390M0 276H390M0 336H390"/></g>
+          <path class="water" d="M0 324 C51 306 77 333 116 316 C161 296 202 332 247 315 C292 299 327 319 390 286 V392 H0Z"/>
+          <g><rect class="block" x="24" y="56" width="52" height="35"/><rect class="block" x="106" y="34" width="48" height="49"/><rect class="block" x="260" y="37" width="42" height="54"/><rect class="block" x="312" y="119" width="48" height="47"/><rect class="block" x="49" y="173" width="49" height="48"/><rect class="block" x="247" y="212" width="53" height="41"/><rect class="block" x="301" y="267" width="48" height="32"/></g>
+          <path class="road-outline" d="M-20 111 C73 118 104 160 173 150 C236 140 287 84 412 100"/><path class="road" d="M-20 111 C73 118 104 160 173 150 C236 140 287 84 412 100"/>
+          <path class="road-outline" d="M80 -12 C93 77 143 123 124 208 C106 287 143 326 164 407"/><path class="road" d="M80 -12 C93 77 143 123 124 208 C106 287 143 326 164 407"/>
+          <path class="road-outline" d="M233 -10 C203 76 228 142 287 173 C344 203 343 263 414 300"/><path class="road" d="M233 -10 C203 76 228 142 287 173 C344 203 343 263 414 300"/>
+          <path class="minor-road" d="M12 240 C95 230 154 244 235 221 C295 204 342 211 396 234"/><path class="minor-road" d="M5 49 C82 69 159 57 223 38 C291 18 337 34 385 65"/>
+          <g aria-label="안전 알림 C"><circle class="zone outer" cx="283" cy="77" r="73" fill="#D97706" fill-opacity=".04" stroke="#D97706" stroke-opacity=".42"/><circle class="zone" cx="283" cy="77" r="48" fill="#D97706" fill-opacity=".10"/><circle class="zone" cx="283" cy="77" r="25" fill="#D97706" fill-opacity=".18"/></g>
+          <g aria-label="안전 알림 B"><circle class="zone outer" cx="327" cy="224" r="67" fill="#2563EB" fill-opacity=".05" stroke="#2563EB" stroke-opacity=".43"/><circle class="zone" cx="327" cy="224" r="44" fill="#2563EB" fill-opacity=".12"/><circle class="zone" cx="327" cy="224" r="23" fill="#2563EB" fill-opacity=".20"/></g>
+          <g aria-label="안전 알림 A"><circle class="zone outer" cx="151" cy="166" r="${aOuter}" fill="#0F766E" fill-opacity="${opacity[2]}" stroke="#0F766E" stroke-opacity="${widened ? '.26' : '.52'}"/><circle class="zone" cx="151" cy="166" r="${aMiddle}" fill="#0F766E" fill-opacity="${opacity[1]}"/><circle class="zone" cx="151" cy="166" r="${aInner}" fill="#0F766E" fill-opacity="${opacity[0]}"/>${isWalk ? `<circle class="zone a-highlight" cx="151" cy="166" r="${aOuter - 2}"/>` : ''}</g>
+          <g class="zone-label" transform="translate(110 37)"><rect width="72" height="21"/><text x="8" y="14">안전 알림 A</text></g><g class="zone-label" transform="translate(275 146)"><rect width="72" height="21"/><text x="8" y="14">안전 알림 B</text></g><g class="zone-label" transform="translate(247 16)"><rect width="72" height="21"/><text x="8" y="14">안전 알림 C</text></g>
+          <circle class="user-ring" cx="${dot[0]}" cy="${dot[1]}" r="13"/><circle class="user-dot" cx="${dot[0]}" cy="${dot[1]}" r="6"/>
+        </svg>
+        <div class="map-note"><span class="legend-dot"></span>${isWalk ? '안심 걸음 진행 중' : '주변 안전 알림 구역'}</div>
+        <div class="legend">반투명 영역: 알림 우선 구역</div>
+        <div class="map-attribution">데모용 안내 지도</div>
+      </div>`;
+    }
+
+    function home() {
+      return `<div class="phone">${appbar(false)}<section class="screen map-screen">${mapGraphic('home')}
+        <div class="home-summary"><div class="eyebrow">시민 안전 알림</div><h1 class="summary-title">오늘도 안전한 걸음을 함께해요</h1>
+          <div class="stat-row"><div class="stat"><strong>2,427보</strong><span>오늘 걸음</span></div><div class="stat"><strong>120P</strong><span>안심 걸음</span></div><div class="stat"><strong>3건</strong><span>주변 안전 알림</span></div></div>
+          <button class="subtle-action" onclick="enterDemo()">구역 진입 시연</button></div>
+        <nav class="bottom-nav"><span class="active">⌂<br>홈</span><span>◷<br>기록</span><span>☰<br>내 정보</span></nav>
+        ${state.pushed ? notification() : ''}</section></div>`;
+    }
+
+    function notification() {
+      return `<div class="notification-layer" role="dialog" aria-modal="true" aria-label="안전 알림"><div class="push-toast"><div class="push-head"><span class="push-icon">!</span><strong class="push-title">주변에서 확인이 필요합니다</strong></div><p class="push-body">현재 주변 안전 알림 지역에 진입했습니다.</p><button class="button" onclick="showAppearance()">확인하기</button></div></div>`;
+    }
+
+    function appearance() {
+      return `<div class="phone">${appbar(true)}<section class="screen"><div class="content"><div class="eyebrow">안전 참여 안내</div><h1 class="title">인상착의 참고 정보</h1><p class="description">아래 정보는 시민이 주변을 안전하게 살필 수 있도록 정리한 내용입니다.</p>
+        <article class="appearance-card"><div class="silhouette-pane"><span class="silhouette-caption">AI가 텍스트 정보를 시각적으로 정리했습니다</span><div class="person" aria-label="검은 모자, 회색 티셔츠, 파란 가방을 든 얼굴 없는 인물 실루엣"><div class="arm left"></div><div class="arm right"></div><div class="neck"></div><div class="head"></div><div class="cap"></div><div class="shirt"></div><div class="bag"></div></div></div><div class="card-body"><div class="tags">${DEMO_DATA.activeCases[0].appearance.map(t => `<span class="tag">${t}</span>`).join('')}</div><p class="time-line">마지막 확인 약 12분 전 · 광진구 자양동 인근</p><div class="notice">ⓘ 얼굴이 아닌 인상착의 기반 참고 이미지입니다.</div></div></article>
+        <p class="safety-message">직접 추적하지 마세요. 긴급하면 112, 실종 제보는 182에 연락하세요.</p>
+        <div class="actions two-actions"><button class="button secondary" onclick="showWalk()">계속 이동하기</button><button class="button" onclick="showReport()">제보하기</button></div>
+      </div></section></div>`;
+    }
+
+    function walk() {
+      const goal = DEMO_DATA.walkGoalM;
+      const done = state.distance >= goal;
+      const elapsedNotice = state.elapsed === 24 ? '<span>시간 경과 시연: A 구역이 확장되고 외곽 안내가 옅어졌습니다.</span>' : '<span>알림 우선 구역 안을 안전하게 지나고 있습니다.</span>';
+      return `<div class="phone">${appbar(true)}<section class="screen"><div class="content"><div class="eyebrow">안심 걸음</div><h1 class="title">안전 참여 구역 통과</h1><p class="description">주변을 살피며 평소처럼 이동하세요. 참여는 자율적입니다.</p>${mapGraphic('walk')}
+        <div class="walk-panel"><div class="walk-topline"><strong>${state.distance}m <span style="color:#788783;font-size:14px;font-weight:700">/ ${goal}m</span></strong><span class="reward">${done ? '+30P 적립' : '+30P 예정'}</span></div><div class="progress-track"><div class="progress-fill" style="width:${Math.min(state.distance / goal * 100, 100)}%"></div></div><p class="walk-help">${elapsedNotice}</p>${done ? '<div class="earned">✓ 안심 걸음 30P가 적립되었습니다.</div>' : ''}
+        </div><div class="actions"><button class="button" onclick="addDistance()">100m 추가</button><button class="button secondary" onclick="advanceTime()">시간 경과 시연</button><button class="button plain secondary" onclick="showReport()">제보하기</button></div></div></section></div>`;
+    }
+
+    function report() {
+      const types = ['직접 목격', '닮은 사람 목격', '관련 물건 발견'];
+      return `<div class="phone">${appbar(true)}<section class="screen"><div class="content"><div class="eyebrow">안전 제보</div><h1 class="title">제보 작성</h1><p class="description report-intro">기억나는 범위에서만 작성해 주세요. 기관 검토 후 처리됩니다.</p><div class="report-guard">제보 내용은 보상과 연계되지 않으며, 안전한 확인을 위한 참고 정보로만 사용됩니다.</div>
+        <p class="section-label">제보 유형</p><div class="option-list">${types.map(type => `<button class="report-option ${state.reportType === type ? 'selected' : ''}" onclick="chooseType('${type}')">${type}</button>`).join('')}</div>
+        <p class="section-label">제보 정보</p><div class="detail-list"><div class="detail-line"><span>데모 시각</span><strong>2026. 08. 16. 09:41</strong></div><div class="detail-line"><span>위치</span><strong>광진구 자양동 인근 (데모 위치)</strong></div></div>
+        <p class="section-label">메모 <span style="color:#899793;font-weight:500">(선택)</span></p><textarea maxlength="100" placeholder="목격한 상황을 간단히 적어 주세요." oninput="updateNote(this.value)">${escapeHtml(state.note)}</textarea><div class="field-count">${state.note.length} / 100</div>
+        <p class="section-label">사진</p><div class="upload-placeholder">▧ &nbsp; 사진 첨부 자리표시자 (데모)</div><div class="validation">${state.validation}</div><div class="actions"><button class="button" onclick="submitReport()">제보 접수하기</button></div>
+      </div></section></div>`;
+    }
+
+    function complete() {
+      return `<div class="phone">${appbar(false)}<section class="screen"><div class="content complete"><div class="complete-icon">✓</div><div class="eyebrow">접수 완료</div><h1 class="title">제보가 접수되었습니다</h1><p class="description">제보는 기관 검토를 거쳐 처리됩니다.</p><div class="receipt"><div class="receipt-row"><span>데모 접수 번호</span><strong>NF-20260816-014</strong></div><div class="receipt-row"><span>접수 상태</span><strong>기관 검토 대기</strong></div></div><div class="actions"><button class="button" onclick="goHome()">홈으로 돌아가기</button></div></div></section></div>`;
+    }
+
+    function escapeHtml(value) { return value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]); }
+    function render() { app.innerHTML = state.screen === 'home' ? home() : state.screen === 'appearance' ? appearance() : state.screen === 'walk' ? walk() : state.screen === 'report' ? report() : complete(); }
+    function enterDemo() { state.pushed = true; render(); }
+    function showAppearance() { state.screen = 'appearance'; state.pushed = false; render(); }
+    function showWalk() { state.screen = 'walk'; render(); }
+    function addDistance() { state.distance = state.distance === 420 ? 520 : 650; render(); }
+    function advanceTime() { state.elapsed = 24; render(); }
+    function showReport() { state.screen = 'report'; state.validation = ''; render(); }
+    function chooseType(type) { state.reportType = type; state.validation = ''; render(); }
+    function updateNote(note) { state.note = note; const count = document.querySelector('.field-count'); if (count) count.textContent = `${note.length} / 100`; }
+    function submitReport() { if (!state.reportType) { state.validation = '제보 유형을 선택해 주세요.'; render(); return; } state.screen = 'complete'; render(); }
+    function goHome() { state.screen = 'home'; state.pushed = false; state.distance = 420; state.elapsed = 12; state.reportType = ''; state.note = ''; state.validation = ''; render(); }
+    render();
+  </script>
+</body>
+</html>
