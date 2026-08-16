@@ -85,8 +85,13 @@
     .zone { mix-blend-mode: multiply; }
     .zone.outer { stroke-width: 1.6; }
     .zone.a-highlight { fill: none; stroke: var(--green); stroke-width: 2.5; stroke-dasharray: 6 5; animation: pulse 1.8s ease-in-out infinite; }
-    .user-dot { fill: #172d2a; stroke: white; stroke-width: 3; }
-    .user-ring { fill: rgba(15,118,110,.12); stroke: rgba(15,118,110,.28); stroke-width: 1; }
+    .user-ring { fill: rgba(15,118,110,.12); stroke: rgba(15,118,110,.34); stroke-width: 1; }
+    .user-marker .marker-disc { fill: white; stroke: #0f766e; stroke-width: 2.4; }
+    .user-marker .marker-face { fill: #23413b; }
+    .user-marker .marker-body { fill: #0f766e; }
+    .movement-route { fill: none; stroke: #0f766e; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 7 6; opacity: .9; }
+    .movement-start { fill: #fff; stroke: #0f766e; stroke-width: 2; }
+    .movement-caption { fill: #16665e; font-size: 10px; font-family: inherit; font-weight: 800; paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
     .map-note {
       position: absolute;
       top: 14px;
@@ -126,21 +131,25 @@
     .description { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
     .section-label { margin: 23px 0 9px; color: #50625d; font-size: 11px; font-weight: 800; letter-spacing: .04em; }
     .appearance-card { margin-top: 18px; background: var(--surface); border: 1px solid var(--line); }
-    .silhouette-pane { position: relative; min-height: 266px; overflow: hidden; display: grid; place-items: end center; background: #edf3f1; border-bottom: 1px solid var(--line); }
+    .silhouette-pane { position: relative; width: 100%; min-height: 266px; overflow: hidden; display: grid; place-items: end center; padding: 0; background: #edf3f1; border: 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+    .silhouette-pane:focus-visible { outline: 3px solid #0f766e; outline-offset: -3px; }
     .silhouette-caption { position: absolute; left: 12px; top: 12px; padding: 5px 7px; background: rgba(255,255,255,.9); border: 1px solid #d5e0dc; color: #477067; font-size: 10px; font-weight: 700; }
-    .person { position: relative; width: 155px; height: 238px; }
-    .head { position: absolute; z-index: 2; top: 31px; left: 57px; width: 40px; height: 47px; border-radius: 45% 45% 47% 47%; background: #c49a7b; }
-    .cap { position: absolute; z-index: 3; top: 20px; left: 49px; width: 58px; height: 23px; border-radius: 28px 28px 7px 7px; background: #202a2a; }
-    .cap::after { content: ""; position: absolute; left: 38px; top: 16px; width: 31px; height: 8px; background: #202a2a; border-radius: 0 9px 9px 0; transform: rotate(-5deg); }
-    .neck { position: absolute; z-index: 1; top: 72px; left: 66px; width: 23px; height: 24px; background: #b88e70; }
-    .shirt { position: absolute; bottom: 1px; left: 27px; width: 102px; height: 153px; background: #829091; clip-path: polygon(27% 0, 73% 0, 100% 19%, 89% 100%, 11% 100%, 0 19%); }
-    .shirt::after { content: ""; position: absolute; top: 0; left: 37px; width: 28px; height: 18px; border-radius: 0 0 18px 18px; background: #edf3f1; }
-    .arm { position: absolute; z-index: 1; top: 106px; width: 27px; height: 104px; background: #718081; }
+    .person { position: relative; width: 178px; height: 244px; }
+    .head { position: absolute; z-index: 2; top: 31px; left: 66px; width: 45px; height: 49px; border-radius: 47% 47% 45% 45%; background: #c29472; }
+    .cap { position: absolute; z-index: 3; top: 19px; left: 55px; width: 68px; height: 25px; border: 2px solid #172123; border-radius: 30px 30px 7px 7px; background: #273235; }
+    .cap::after { content: ""; position: absolute; left: 42px; top: 16px; width: 35px; height: 9px; background: #1a2325; border-radius: 0 10px 10px 0; transform: rotate(-5deg); }
+    .neck { position: absolute; z-index: 1; top: 75px; left: 77px; width: 24px; height: 24px; background: #ad805f; }
+    .shirt { position: absolute; bottom: 0; left: 31px; width: 117px; height: 158px; border: 1px solid #667577; background: #8b9898; clip-path: polygon(25% 0, 75% 0, 100% 19%, 89% 100%, 11% 100%, 0 19%); }
+    .shirt::before { content: ""; position: absolute; top: 0; left: 42px; width: 31px; height: 22px; border-radius: 0 0 18px 18px; background: #edf3f1; }
+    .shirt::after { content: ""; position: absolute; left: 15px; right: 15px; top: 72px; height: 1px; background: rgba(47,61,61,.35); box-shadow: 0 32px 0 rgba(47,61,61,.25); }
+    .arm { position: absolute; z-index: 1; top: 106px; width: 30px; height: 108px; border: 1px solid #647273; background: #7f8d8e; }
     .arm.left { left: 17px; transform: rotate(8deg); }
-    .arm.right { right: 16px; transform: rotate(-8deg); }
-    .bag { position: absolute; z-index: 4; right: 17px; bottom: 24px; width: 44px; height: 58px; background: #2874b8; border: 3px solid #1e5793; }
-    .bag::before { content: ""; position: absolute; top: -19px; left: -22px; width: 31px; height: 45px; border-top: 7px solid #1e5793; border-left: 7px solid #1e5793; border-radius: 20px 0 0 0; transform: rotate(14deg); }
-    .bag::after { content: ""; position: absolute; left: 8px; top: 19px; width: 22px; height: 3px; background: #a9d0ed; }
+    .arm.right { right: 17px; transform: rotate(-8deg); }
+    .bag { position: absolute; z-index: 4; right: 14px; bottom: 25px; width: 49px; height: 62px; border: 3px solid #1d5b98; background: #2f7fbd; }
+    .bag::before { content: ""; position: absolute; top: -23px; left: -26px; width: 36px; height: 50px; border-top: 7px solid #1e5d99; border-left: 7px solid #1e5d99; border-radius: 21px 0 0 0; transform: rotate(14deg); }
+    .bag::after { content: ""; position: absolute; left: 8px; top: 17px; width: 26px; height: 4px; background: #b7d9f0; box-shadow: 0 10px 0 rgba(183,217,240,.55); }
+    .info-reward { position: absolute; right: 11px; bottom: 11px; z-index: 5; padding: 7px 8px; border: 1px solid #90b9ad; background: rgba(255,255,255,.94); color: #19665d; font-size: 11px; font-weight: 800; }
+    .info-reward.claimed { border-color: #8ac5a9; color: #277151; background: #eff9f3; }
     .card-body { padding: 15px; }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .tag { padding: 6px 8px; color: #315851; background: #eef5f3; border: 1px solid #d3e3de; font-size: 12px; font-weight: 700; }
@@ -154,6 +163,7 @@
     .button.secondary { background: white; color: var(--green-dark); }
     .button.secondary:hover { background: #f5faf8; }
     .button.plain { border-color: #bdccca; color: #3e5550; }
+    .button:disabled { cursor: default; border-color: #b9c8c3; background: #b9c8c3; color: #f6f9f8; }
     .walk-map { min-height: 324px; margin: 16px -18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
     .walk-map svg { height: 324px; }
     .walk-panel { margin-top: 0; padding: 16px 0 0; }
@@ -171,6 +181,12 @@
     .report-option::before { content: ""; flex: 0 0 auto; width: 16px; height: 16px; border: 1.5px solid #aebfba; border-radius: 50%; }
     .report-option.selected { border-color: var(--green); color: var(--green-dark); background: #f6fbf9; }
     .report-option.selected::before { box-shadow: inset 0 0 0 4px #f6fbf9; border-color: var(--green); background: var(--green); }
+    .case-list { display: grid; gap: 7px; margin-top: 12px; }
+    .case-choice { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-left: 4px solid var(--case); background: white; color: #334541; text-align: left; cursor: pointer; }
+    .case-choice.active { background: #f4faf8; border-color: #8ab9ae; }
+    .case-choice strong { display: block; font-size: 12px; }
+    .case-choice span { display: block; margin-top: 2px; color: #70807b; font-size: 10px; }
+    .case-badge { display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: var(--case); color: white; font-size: 11px; font-weight: 800; }
     .detail-list { border-top: 1px solid var(--line); }
     .detail-line { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
     .detail-line span { flex: 0 0 75px; color: var(--muted); }
@@ -204,15 +220,15 @@
         { label: 'goal', walkDistanceM: 650 }
       ],
       activeCases: [
-        { id: 'NF-DEMO-01', displayName: '안전 알림 A', appearance: ['검은 모자', '회색 티셔츠', '파란 가방'], lastSeen: { area: '광진구 자양동 인근', elapsedMinutes: 12 }, rangePreset: { baseRadiusM: 170, growthMPerMinute: 11, maxRadiusM: 650 }, color: '#0F766E' },
-        { id: 'NF-DEMO-02', displayName: '안전 알림 B', lastSeen: { elapsedMinutes: 28 }, rangePreset: { baseRadiusM: 160, growthMPerMinute: 9, maxRadiusM: 720 }, color: '#2563EB' },
-        { id: 'NF-DEMO-03', displayName: '안전 알림 C', lastSeen: { elapsedMinutes: 52 }, rangePreset: { baseRadiusM: 190, growthMPerMinute: 8, maxRadiusM: 780 }, color: '#D97706' }
+        { id: 'NF-DEMO-01', displayName: '실종 알림 A', appearance: ['검은 모자', '회색 티셔츠', '파란 가방'], lastSeen: { area: '광진구 자양동 인근', elapsedMinutes: 12 }, rangePreset: { baseRadiusM: 170, growthMPerMinute: 11, maxRadiusM: 650 }, color: '#0F766E' },
+        { id: 'NF-DEMO-02', displayName: '실종 알림 B', appearance: ['갈색 조끼', '검정 모자', '작은 손가방'], lastSeen: { area: '광진구 구의동 인근', elapsedMinutes: 28 }, rangePreset: { baseRadiusM: 160, growthMPerMinute: 9, maxRadiusM: 720 }, color: '#2563EB' },
+        { id: 'NF-DEMO-03', displayName: '실종 알림 C', appearance: ['노란 모자', '하늘색 셔츠', '흰 가방'], lastSeen: { area: '광진구 화양동 인근', elapsedMinutes: 52 }, rangePreset: { baseRadiusM: 190, growthMPerMinute: 8, maxRadiusM: 780 }, color: '#D97706' }
       ],
       walkGoalM: 650,
       walkPoints: 30
     };
 
-    const state = { screen: 'home', pushed: false, distance: 420, elapsed: 12, reportType: '', note: '', validation: '' };
+    const state = { screen: 'home', pushed: false, distance: 420, elapsed: 12, activeCase: 0, infoReward: false, reportType: '', note: '', validation: '' };
     const app = document.getElementById('app');
 
     function appbar(back) {
@@ -223,16 +239,24 @@
         </header>`;
     }
 
+    function activeCase() { return DEMO_DATA.activeCases[state.activeCase]; }
+    function userMarker(dot) {
+      return `<g class="user-marker" transform="translate(${dot[0]} ${dot[1]})" aria-label="사용자 위치"><circle class="user-ring" r="16"/><circle class="marker-disc" r="11"/><circle class="marker-face" cy="-3" r="3"/><path class="marker-body" d="M-5 7c1-5 9-5 10 0v2H-5z"/></g>`;
+    }
+
     function mapGraphic(mode) {
       const isWalk = mode === 'walk';
       const widened = isWalk && state.elapsed === 24;
       const aOuter = widened ? 143 : 108;
       const aMiddle = widened ? 95 : 72;
       const aInner = widened ? 49 : 38;
-      const opacity = widened ? ['.11','.065','.025'] : ['.22','.13','.06'];
-      const dot = isWalk ? (state.distance >= 650 ? [162, 132] : [145, 148]) : [323, 309];
-      return `<div class="map-area ${isWalk ? 'walk-map' : ''}" aria-label="안전 참여 구역 지도">
-        <svg viewBox="0 0 390 392" role="img" aria-label="안전 알림 구역 A, B, C와 사용자 위치">
+      const opacity = widened ? ['.38','.15','.035'] : ['.42','.19','.045'];
+      const walkPositions = { 420: [190, 211], 520: [163, 179], 650: [119, 137] };
+      const dot = isWalk ? walkPositions[state.distance] : [323, 309];
+      const userRoute = isWalk ? `<g aria-label="사용자 이동 궤적"><circle class="movement-start" cx="323" cy="309" r="5"/><path class="movement-route" marker-end="url(#movement-arrow)" d="M323 309 Q264 267 ${dot[0]} ${dot[1]}"/><text class="movement-caption" x="218" y="274">사용자 이동 ${state.distance}m</text></g>` : '';
+      return `<div class="map-area ${isWalk ? 'walk-map' : ''}" aria-label="실종 알림 구역 지도">
+        <svg viewBox="0 0 390 392" role="img" aria-label="실종 알림 구역 A, B, C와 사용자 위치">
+          <defs><marker id="movement-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0f766e"/></marker></defs>
           <rect width="390" height="392" fill="#e7ece9"/>
           <g class="map-grid"><path d="M18 0V392M77 0V392M136 0V392M195 0V392M254 0V392M313 0V392M372 0V392"/><path d="M0 36H390M0 96H390M0 156H390M0 216H390M0 276H390M0 336H390"/></g>
           <path class="water" d="M0 324 C51 306 77 333 116 316 C161 296 202 332 247 315 C292 299 327 319 390 286 V392 H0Z"/>
@@ -241,34 +265,37 @@
           <path class="road-outline" d="M80 -12 C93 77 143 123 124 208 C106 287 143 326 164 407"/><path class="road" d="M80 -12 C93 77 143 123 124 208 C106 287 143 326 164 407"/>
           <path class="road-outline" d="M233 -10 C203 76 228 142 287 173 C344 203 343 263 414 300"/><path class="road" d="M233 -10 C203 76 228 142 287 173 C344 203 343 263 414 300"/>
           <path class="minor-road" d="M12 240 C95 230 154 244 235 221 C295 204 342 211 396 234"/><path class="minor-road" d="M5 49 C82 69 159 57 223 38 C291 18 337 34 385 65"/>
-          <g aria-label="안전 알림 C"><circle class="zone outer" cx="283" cy="77" r="73" fill="#D97706" fill-opacity=".04" stroke="#D97706" stroke-opacity=".42"/><circle class="zone" cx="283" cy="77" r="48" fill="#D97706" fill-opacity=".10"/><circle class="zone" cx="283" cy="77" r="25" fill="#D97706" fill-opacity=".18"/></g>
-          <g aria-label="안전 알림 B"><circle class="zone outer" cx="327" cy="224" r="67" fill="#2563EB" fill-opacity=".05" stroke="#2563EB" stroke-opacity=".43"/><circle class="zone" cx="327" cy="224" r="44" fill="#2563EB" fill-opacity=".12"/><circle class="zone" cx="327" cy="224" r="23" fill="#2563EB" fill-opacity=".20"/></g>
-          <g aria-label="안전 알림 A"><circle class="zone outer" cx="151" cy="166" r="${aOuter}" fill="#0F766E" fill-opacity="${opacity[2]}" stroke="#0F766E" stroke-opacity="${widened ? '.26' : '.52'}"/><circle class="zone" cx="151" cy="166" r="${aMiddle}" fill="#0F766E" fill-opacity="${opacity[1]}"/><circle class="zone" cx="151" cy="166" r="${aInner}" fill="#0F766E" fill-opacity="${opacity[0]}"/>${isWalk ? `<circle class="zone a-highlight" cx="151" cy="166" r="${aOuter - 2}"/>` : ''}</g>
-          <g class="zone-label" transform="translate(110 37)"><rect width="72" height="21"/><text x="8" y="14">안전 알림 A</text></g><g class="zone-label" transform="translate(275 146)"><rect width="72" height="21"/><text x="8" y="14">안전 알림 B</text></g><g class="zone-label" transform="translate(247 16)"><rect width="72" height="21"/><text x="8" y="14">안전 알림 C</text></g>
-          <circle class="user-ring" cx="${dot[0]}" cy="${dot[1]}" r="13"/><circle class="user-dot" cx="${dot[0]}" cy="${dot[1]}" r="6"/>
+          <g aria-label="실종 알림 C"><circle class="zone outer" cx="283" cy="77" r="73" fill="#D97706" fill-opacity=".035" stroke="#D97706" stroke-opacity=".42"/><circle class="zone" cx="283" cy="77" r="48" fill="#D97706" fill-opacity=".16"/><circle class="zone" cx="283" cy="77" r="25" fill="#D97706" fill-opacity=".34"/></g>
+          <g aria-label="실종 알림 B"><circle class="zone outer" cx="327" cy="224" r="67" fill="#2563EB" fill-opacity=".035" stroke="#2563EB" stroke-opacity=".43"/><circle class="zone" cx="327" cy="224" r="44" fill="#2563EB" fill-opacity=".16"/><circle class="zone" cx="327" cy="224" r="23" fill="#2563EB" fill-opacity=".34"/></g>
+          <g aria-label="실종 알림 A"><circle class="zone outer" cx="151" cy="166" r="${aOuter}" fill="#0F766E" fill-opacity="${opacity[2]}" stroke="#0F766E" stroke-opacity="${widened ? '.26' : '.52'}"/><circle class="zone" cx="151" cy="166" r="${aMiddle}" fill="#0F766E" fill-opacity="${opacity[1]}"/><circle class="zone" cx="151" cy="166" r="${aInner}" fill="#0F766E" fill-opacity="${opacity[0]}"/>${isWalk ? `<circle class="zone a-highlight" cx="151" cy="166" r="${aOuter - 2}"/>` : ''}</g>
+          <g class="zone-label" transform="translate(110 37)"><rect width="72" height="21"/><text x="8" y="14">실종 알림 A</text></g><g class="zone-label" transform="translate(275 146)"><rect width="72" height="21"/><text x="8" y="14">실종 알림 B</text></g><g class="zone-label" transform="translate(247 16)"><rect width="72" height="21"/><text x="8" y="14">실종 알림 C</text></g>
+          ${userRoute}${userMarker(dot)}
         </svg>
-        <div class="map-note"><span class="legend-dot"></span>${isWalk ? '안심 걸음 진행 중' : '주변 안전 알림 구역'}</div>
-        <div class="legend">반투명 영역: 알림 우선 구역</div>
+        <div class="map-note"><span class="legend-dot"></span>${isWalk ? '사용자 이동 · 거리 기록 중' : `${state.elapsed}분 경과 기반 실종 알림`}</div>
+        <div class="legend">중심부일수록 확인 중요도 높음</div>
         <div class="map-attribution">데모용 안내 지도</div>
       </div>`;
     }
 
     function home() {
+      const rewardTotal = 120 + (state.infoReward ? 10 : 0);
       return `<div class="phone">${appbar(false)}<section class="screen map-screen">${mapGraphic('home')}
-        <div class="home-summary"><div class="eyebrow">시민 안전 알림</div><h1 class="summary-title">오늘도 안전한 걸음을 함께해요</h1>
-          <div class="stat-row"><div class="stat"><strong>2,427보</strong><span>오늘 걸음</span></div><div class="stat"><strong>120P</strong><span>안심 걸음</span></div><div class="stat"><strong>3건</strong><span>주변 안전 알림</span></div></div>
-          <button class="subtle-action" onclick="enterDemo()">구역 진입 시연</button></div>
+        <div class="home-summary"><div class="eyebrow">동시 실종 알림</div><h1 class="summary-title">현재 확인이 필요한 실종 알림 3건</h1>
+          <div class="stat-row"><div class="stat"><strong>2,427보</strong><span>오늘 걸음</span></div><div class="stat"><strong>${rewardTotal}P</strong><span>안심 리워드</span></div><div class="stat"><strong>3건</strong><span>실종 알림</span></div></div>
+          <div class="case-list">${DEMO_DATA.activeCases.map((item, index) => `<button class="case-choice ${state.activeCase === index ? 'active' : ''}" style="--case:${item.color}" onclick="selectCase(${index})"><span class="case-badge">${String.fromCharCode(65 + index)}</span><span><strong>${item.displayName}</strong><span>${item.lastSeen.elapsedMinutes}분 경과 · ${item.appearance.join(' · ')}</span></span></button>`).join('')}</div>
+          <button class="subtle-action" onclick="enterDemo()">실종 알림 A 구역 진입 시연</button></div>
         <nav class="bottom-nav"><span class="active">⌂<br>홈</span><span>◷<br>기록</span><span>☰<br>내 정보</span></nav>
         ${state.pushed ? notification() : ''}</section></div>`;
     }
 
     function notification() {
-      return `<div class="notification-layer" role="dialog" aria-modal="true" aria-label="안전 알림"><div class="push-toast"><div class="push-head"><span class="push-icon">!</span><strong class="push-title">주변에서 확인이 필요합니다</strong></div><p class="push-body">현재 주변 안전 알림 지역에 진입했습니다.</p><button class="button" onclick="showAppearance()">확인하기</button></div></div>`;
+      return `<div class="notification-layer" role="dialog" aria-modal="true" aria-label="실종 알림"><div class="push-toast"><div class="push-head"><span class="push-icon">!</span><strong class="push-title">주변에서 확인이 필요합니다</strong></div><p class="push-body">현재 실종 알림 A 지역에 진입했습니다.</p><button class="button" onclick="showAppearance()">인상착의 확인하기</button></div></div>`;
     }
 
     function appearance() {
-      return `<div class="phone">${appbar(true)}<section class="screen"><div class="content"><div class="eyebrow">안전 참여 안내</div><h1 class="title">인상착의 참고 정보</h1><p class="description">아래 정보는 시민이 주변을 안전하게 살필 수 있도록 정리한 내용입니다.</p>
-        <article class="appearance-card"><div class="silhouette-pane"><span class="silhouette-caption">AI가 텍스트 정보를 시각적으로 정리했습니다</span><div class="person" aria-label="검은 모자, 회색 티셔츠, 파란 가방을 든 얼굴 없는 인물 실루엣"><div class="arm left"></div><div class="arm right"></div><div class="neck"></div><div class="head"></div><div class="cap"></div><div class="shirt"></div><div class="bag"></div></div></div><div class="card-body"><div class="tags">${DEMO_DATA.activeCases[0].appearance.map(t => `<span class="tag">${t}</span>`).join('')}</div><p class="time-line">마지막 확인 약 12분 전 · 광진구 자양동 인근</p><div class="notice">ⓘ 얼굴이 아닌 인상착의 기반 참고 이미지입니다.</div></div></article>
+      const item = activeCase();
+      return `<div class="phone">${appbar(true)}<section class="screen"><div class="content"><div class="eyebrow">${item.displayName} · 인상착의 참고 정보</div><h1 class="title">인상착의 확인</h1><p class="description">아래 정보는 시민이 주변을 안전하게 살필 수 있도록 정리한 내용입니다.</p>
+        <article class="appearance-card"><button class="silhouette-pane" type="button" onclick="claimInfoReward()" aria-label="인상착의 참고 이미지를 확인하고 정보 확인 보너스 받기"><span class="silhouette-caption">AI가 텍스트 정보를 시각적으로 정리했습니다</span><div class="person" aria-label="얼굴이 드러나지 않은 인물의 모자, 티셔츠, 가방을 표현한 참고 실루엣"><div class="arm left"></div><div class="arm right"></div><div class="neck"></div><div class="head"></div><div class="cap"></div><div class="shirt"></div><div class="bag"></div></div><span class="info-reward ${state.infoReward ? 'claimed' : ''}">${state.infoReward ? '✓ 정보 확인 +10P 적립' : '참고 이미지 확인 · +10P'}</span></button><div class="card-body"><div class="tags">${item.appearance.map(t => `<span class="tag">${t}</span>`).join('')}</div><p class="time-line">마지막 확인 약 ${item.lastSeen.elapsedMinutes}분 전 · ${item.lastSeen.area}</p><div class="notice">ⓘ 얼굴이 아닌 인상착의 기반 참고 이미지입니다.</div></div></article>
         <p class="safety-message">직접 추적하지 마세요. 긴급하면 112, 실종 제보는 182에 연락하세요.</p>
         <div class="actions two-actions"><button class="button secondary" onclick="showWalk()">계속 이동하기</button><button class="button" onclick="showReport()">제보하기</button></div>
       </div></section></div>`;
@@ -277,10 +304,13 @@
     function walk() {
       const goal = DEMO_DATA.walkGoalM;
       const done = state.distance >= goal;
-      const elapsedNotice = state.elapsed === 24 ? '<span>시간 경과 시연: A 구역이 확장되고 외곽 안내가 옅어졌습니다.</span>' : '<span>알림 우선 구역 안을 안전하게 지나고 있습니다.</span>';
-      return `<div class="phone">${appbar(true)}<section class="screen"><div class="content"><div class="eyebrow">안심 걸음</div><h1 class="title">안전 참여 구역 통과</h1><p class="description">주변을 살피며 평소처럼 이동하세요. 참여는 자율적입니다.</p>${mapGraphic('walk')}
-        <div class="walk-panel"><div class="walk-topline"><strong>${state.distance}m <span style="color:#788783;font-size:14px;font-weight:700">/ ${goal}m</span></strong><span class="reward">${done ? '+30P 적립' : '+30P 예정'}</span></div><div class="progress-track"><div class="progress-fill" style="width:${Math.min(state.distance / goal * 100, 100)}%"></div></div><p class="walk-help">${elapsedNotice}</p>${done ? '<div class="earned">✓ 안심 걸음 30P가 적립되었습니다.</div>' : ''}
-        </div><div class="actions"><button class="button" onclick="addDistance()">100m 추가</button><button class="button secondary" onclick="advanceTime()">시간 경과 시연</button><button class="button plain secondary" onclick="showReport()">제보하기</button></div></div></section></div>`;
+      const nextDistance = state.distance === 420 ? 520 : goal;
+      const inZoneDistance = Math.max(state.distance - 120, 0);
+      const elapsedNotice = state.elapsed === 24 ? '<span>12분이 지나 범위를 갱신했습니다. 중심부는 진하고 외곽은 옅게 표시됩니다.</span>' : '<span>점선과 화살표는 사용자가 실종 알림 A 구역 안에서 이동한 경로를 나타냅니다.</span>';
+      const informationReward = state.infoReward ? ' · 정보 확인 +10P 반영' : '';
+      return `<div class="phone">${appbar(true)}<section class="screen"><div class="content"><div class="eyebrow">실종 알림 A · 사용자 이동 기록</div><h1 class="title">실종 알림 구역 통과</h1><p class="description">사용자 아이콘과 점선·화살표로 이동 경로를 확인할 수 있습니다.</p>${mapGraphic('walk')}
+        <div class="walk-panel"><div class="walk-topline"><strong>${state.distance}m <span style="color:#788783;font-size:14px;font-weight:700">/ ${goal}m</span></strong><span class="reward">${done ? '+30P 적립' : '+30P 예정'}${informationReward}</span></div><div class="progress-track"><div class="progress-fill" style="width:${Math.min(state.distance / goal * 100, 100)}%"></div></div><p class="walk-help">실종 알림 A 범위 내 이동 ${inZoneDistance}m · ${elapsedNotice}</p>${done ? '<div class="earned">✓ 실종 알림 A 구역 통과 리워드 30P가 적립되었습니다.</div>' : ''}
+        </div><div class="actions"><button class="button" onclick="addDistance()" ${done ? 'disabled' : ''}>${done ? '이동 시연 완료 · 650m' : `이동 시연: ${state.distance} → ${nextDistance}m`}</button><button class="button secondary" onclick="advanceTime()" ${state.elapsed === 24 ? 'disabled' : ''}>${state.elapsed === 24 ? '범위 갱신 완료 · 24분' : '12분 경과: 실종 범위 갱신'}</button><button class="button plain secondary" onclick="showReport()">제보하기</button></div></div></section></div>`;
     }
 
     function report() {
@@ -299,16 +329,18 @@
 
     function escapeHtml(value) { return value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]); }
     function render() { app.innerHTML = state.screen === 'home' ? home() : state.screen === 'appearance' ? appearance() : state.screen === 'walk' ? walk() : state.screen === 'report' ? report() : complete(); }
-    function enterDemo() { state.pushed = true; render(); }
+    function enterDemo() { state.activeCase = 0; state.pushed = true; render(); }
     function showAppearance() { state.screen = 'appearance'; state.pushed = false; render(); }
     function showWalk() { state.screen = 'walk'; render(); }
-    function addDistance() { state.distance = state.distance === 420 ? 520 : 650; render(); }
+    function addDistance() { state.distance = state.distance === 420 ? 520 : DEMO_DATA.walkGoalM; render(); }
     function advanceTime() { state.elapsed = 24; render(); }
+    function selectCase(index) { state.activeCase = index; render(); }
+    function claimInfoReward() { state.infoReward = true; render(); }
     function showReport() { state.screen = 'report'; state.validation = ''; render(); }
     function chooseType(type) { state.reportType = type; state.validation = ''; render(); }
     function updateNote(note) { state.note = note; const count = document.querySelector('.field-count'); if (count) count.textContent = `${note.length} / 100`; }
     function submitReport() { if (!state.reportType) { state.validation = '제보 유형을 선택해 주세요.'; render(); return; } state.screen = 'complete'; render(); }
-    function goHome() { state.screen = 'home'; state.pushed = false; state.distance = 420; state.elapsed = 12; state.reportType = ''; state.note = ''; state.validation = ''; render(); }
+    function goHome() { state.screen = 'home'; state.pushed = false; state.distance = 420; state.elapsed = 12; state.activeCase = 0; state.reportType = ''; state.note = ''; state.validation = ''; render(); }
     render();
   </script>
 </body>
